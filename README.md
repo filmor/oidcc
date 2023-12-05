@@ -153,6 +153,14 @@ Supervisor.init([
 ], strategy: :one_for_one)
 ```
 
+### Gleam
+
+```sh
+gleam add oidcc
+```
+
+<!-- TODO: Instructions -->
+
 ## Usage
 
 ### Companion libraries

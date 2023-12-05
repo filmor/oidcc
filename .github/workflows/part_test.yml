@@ -81,6 +81,42 @@ jobs:
       - run: mix deps.get
       - run: mix format --check-formatted
 
+  gleam_format:
+    name: gleam format
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: setupBEAM
+        with:
+          version-file: .tool-versions
+          version-type: strict
+      - run: gleam format --check src test
+
+  gleam_check:
+    name: gleam check
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: setupBEAM
+        with:
+          version-file: .tool-versions
+          version-type: strict
+      - uses: actions/cache@v3
+        with:
+          path: build
+          key: gleam_check-build-${{ runner.os }}-${{ steps.setupBEAM.outputs.gleam-version }}-${{ hashFiles('gleam.toml') }}
+          restore-keys: |
+            gleam_check-build-${{ runner.os }}-${{ steps.setupBEAM.outputs.gleam-version }}-
+      - run: gleam deps download
+      - run: gleam build --warnings-as-errors
+      - run: gleam check
+
   eunit:
     name: rebar3 eunit (${{ matrix.otp }})
 
@@ -207,6 +243,28 @@ jobs:
         with:
           name: mix_test-coverage
           path: cover/mix_test-${{ steps.setupBEAM.outputs.elixir-version }}.coverdata
+
+  gleam_test:
+    name: gleam test
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        id: setupBEAM
+        with:
+          version-file: .tool-versions
+          version-type: strict
+      - uses: actions/cache@v3
+        with:
+          path: build
+          key: gleam_test-build-${{ runner.os }}-${{ steps.setupBEAM.outputs.gleam-version }}-${{ hashFiles('gleam.toml') }}
+          restore-keys: |
+            gleam_test-build-${{ runner.os }}-${{ steps.setupBEAM.outputs.gleam-version }}-
+      - run: gleam deps download
+      - run: gleam build --warnings-as-errors
+      - run: gleam test
 
   coverage:
     name: mix test.coverage

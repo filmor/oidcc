@@ -1,5 +1,6 @@
 # The directory Mix & Rebar will write compiled artifacts to.
 /_build/
+/build/
 *.beam
 
 # If you run "mix test --cover" / "rebar3 eunit" / "rebar3 ct", coverage assets end up here.
